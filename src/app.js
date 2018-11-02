@@ -17,10 +17,10 @@ class App extends Component {
       'pages/index2/index'
     ],
     window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      backgroundTextStyle: 'black',
+      navigationBarBackgroundColor: '#2b59f4',
       navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'light'
     }
   }
 

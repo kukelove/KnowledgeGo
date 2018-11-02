@@ -2,12 +2,9 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { bindActionCreators } from 'redux'
-import A from '../../components/A/A'
-import B from '../../components/B/B'
-
 import * as Actions from '../../actions/counter'
-
 import './index.scss'
+import Skateboard from '../../components/Skateboard/Skateboard'
 
 function mapStateToProps(state) {
   return {
@@ -26,21 +23,19 @@ export default class Index extends Component {
   }
 
   state = {
-    x: [1, 2]
+   
+    touchItemMoniMap: {
+    },
+    leftdown: 1
   }
 
   componentWillMount () {
     console.log('page willmount')
-    setTimeout(() => {
-      this.setState({
-        x: [3, 4]
-      })
-    }, 2000);
-
   }
 
   componentDidMount () {
     console.log('page didmount')
+  
   }
 
   componentWillReceiveProps (nextProps) {
@@ -58,20 +53,62 @@ export default class Index extends Component {
       url: '/pages/index2/index?sd=1'
     })
   }
+  touchStart = (option) =>{
+    let {pageX, pageY} = option.touches[0]
+    this.state.touchItemMoniMap['item'] = {pageX, pageY}
+    console.log(this.state.touchItemMoniMap['item'])
+  }
+
+  touchEnd = (option) => {
+    console.log(option)
+    let {pageX, pageY} = option.changedTouches[0]
+    let itemStartPi = this.state.touchItemMoniMap['item']
+
+    if(itemStartPi.pageX - pageX > 100) {
+      console.log('向左边滑动了')
+      this.setState( {'leftdown': 2} )
+      let that = this
+      setTimeout(()=>{
+        that.setState( {'leftdown': 3} )
+      }, 1500)
+    }
+  }
+
+  getItemClassName= () =>{
+    let resultClass = 'item'
+  
+    if(this.state.leftdown == 2) resultClass = 'item animated bounceOutLeft slow';
+    else if(this.state.leftdown ==3) resultClass = 'delete'
+    return resultClass;
+  }
 
   render () {
     const { add, minus, asyncAdd } = this.props
+    console.log(this.getItemClassName())
     return (
-      <View className='index'>
-        首页
-        {/* <Button className='add_btn' onClick={add}>+</Button>
-        <Button className='dec_btn' onClick={minus}>-</Button>
-        <Button className='dec_btn' onClick={asyncAdd}>async</Button>
-        <View>{this.props.counter.num}</View>
-        {this.state.x.map((item, index) => <A key={index} t={item} onClick={this.goto} />)}
-        <B onClick={this.goto} />
-        <B onClick={this.goto} />
-        <Button onClick={this.goto}>走你</Button> */}
+      <View className='page'>
+        <View className='header_black'>
+          <View className='header_tip'>
+            <View className='header_tip_title'><Text>看板提示</Text></View>
+            <View><Text>掌握的基础是各项指标达到，请严格执行</Text></View>
+          </View>
+        </View>  
+        <ScrollView className='scroll_area'>
+          {
+            [1,2,3,4,5].map((index)=>{
+              return <Skateboard key={index}
+          >
+            <View className='item'>
+                <Image className='item_icon' src="https://images.wosaimg.com/83/b35d20387e82df1bdba687b654901def228ce4.png"/>
+                <View className='item_content'>
+                    <Text className='item_content_title'>Numbers</Text>
+                    <Text className='item_content_des'>START LEARNNG TO CODR HERE</Text>
+                </View>
+            </View>
+          </Skateboard>
+            })
+          }
+        </ScrollView>
       </View>
     )
   }
